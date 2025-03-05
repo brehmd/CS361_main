@@ -1,5 +1,6 @@
 import csv
 import os
+import zmq
 
 SCREEN_WIDTH = 90
 BORDER_WIDTH = 5
@@ -48,7 +49,7 @@ def print_logo(with_slogan = 0):
     print()
     
     return
-    
+
 def show_homepage():
     print_logo(1)
     
@@ -149,11 +150,41 @@ def view_planner():
     custom_print(mode = "line")
     print_logo()
     print()
-    custom_print("microservice VIEW PLANNER", "block")
-    return 1
+    
+    context = zmq.Context()
+    socket = context.socket(zmq.REQ)
+    socket.connect("tcp://localhost:5555") 
+    socket.send_string("view_planner")
+    response = socket.recv_string()
+    print(response)
+    
+    socket.close()
+    context.term()
+    
+    print()
+    print("Select from one of the following options:")
+    print("1. View Class")
+    print("2. View Task")
+    print("3. Filter by attribute")
+    print("press enter to return to main")
+    user_input = input("|view_planner|: ")
+    return vp_options(user_input)
 
 def vp_options(user_input):
-    pass
+    if user_input == "1":
+        return view_class()
+    
+    elif user_input == "2":
+        return view_task()
+    
+    elif user_input == "3":
+        return filterby()
+    
+    elif user_input == "":
+        return 1
+    
+    else:
+        return shortcut_commands(user_input)
 
 def create_new():
     custom_print(mode = "line")
@@ -340,6 +371,12 @@ if __name__ ==  "__main__":
     while(is_repeat):
         user_input = main_menu()
         is_repeat = mm_options(user_input)
+    
+    context = zmq.Context()
+    socket = context.socket(zmq.REQ)
+    socket.connect("tcp://localhost:5555") 
+    socket.send_string("end")
+    socket.recv_string()
     
     custom_print(mode = "line")
     custom_print("Thank you for using prO(1), all progress is saved.", "center")
