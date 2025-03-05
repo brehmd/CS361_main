@@ -145,7 +145,6 @@ def h_options(user_input):
         
     return 1
 
-
 def view_planner():
     custom_print(mode = "line")
     print_logo()
@@ -165,7 +164,7 @@ def view_planner():
     print("Select from one of the following options:")
     print("1. View Class")
     print("2. View Task")
-    print("3. Filter by attribute")
+    print("3. Edit")
     print("press enter to return to main")
     user_input = input("|view_planner|: ")
     return vp_options(user_input)
@@ -178,13 +177,35 @@ def vp_options(user_input):
         return view_task()
     
     elif user_input == "3":
-        return filterby()
+        return edit_planner()
     
     elif user_input == "":
         return 1
     
     else:
         return shortcut_commands(user_input)
+
+
+def view_class():
+    pass
+
+def vc_options(user_input):
+    pass
+
+
+def view_task():
+    pass
+
+def vt_options():
+    pass
+
+
+def edit_planner():
+    pass
+
+def ep_options():
+    pass
+
 
 def create_new():
     custom_print(mode = "line")
