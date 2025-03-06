@@ -187,10 +187,57 @@ def vp_options(user_input):
 
 
 def view_class():
-    pass
+    custom_print(mode = "line")
+    print_logo()
+    print()
+    
+    context = zmq.Context()
+    socket = context.socket(zmq.REQ)
+    socket.connect("tcp://localhost:5556")
+    socket.send_string("view_class")
+    
+    response = socket.recv_string()
+    print(response)
+    
+    choose_class = input("|view_class|: ")
+    # validate input
+
+    socket.send_string(choose_class)
+    message = socket.recv_string()
+    print(message)
+    
+    socket.close()
+    context.term()
+    
+    print()
+    print("Select from one of the following options:")
+    print("1. View Planner")
+    print("2. View another Class")
+    print("3. View Task")
+    print("4. Edit")
+    print("press enter to return to main")
+    user_input = input("|view_class|: ")
+    return vc_options(user_input)
+    
 
 def vc_options(user_input):
-    pass
+    if user_input == "1":
+        return view_planner()
+    
+    elif user_input == "2":
+        return view_class()
+    
+    elif user_input == "3":
+        return view_task()
+    
+    elif user_input == "4":
+        return edit_planner()
+    
+    elif user_input == "":
+        return 1
+    
+    else:
+        return shortcut_commands(user_input)
 
 
 def view_task():
@@ -248,7 +295,7 @@ def create_class():
     
     class_file = input("Enter class local folder location (def = create new): ")
     if class_file == '':
-        os.mkdir(f"./{class_name}")
+        os.mkdir(f"./{class_name}", 0o755)
         class_file = f"./{class_name}"
         with open(f"{class_file}/tasklist.csv", mode = 'w', newline = '') as file:
             writer = csv.writer(file)
@@ -345,7 +392,7 @@ def shortcut_commands(user_input):
         return create_class()
     
     elif uniform_input == "view class":
-        pass
+        return view_class()
     
     elif uniform_input == "view task":
         pass
@@ -356,16 +403,16 @@ def shortcut_commands(user_input):
     elif uniform_input == "main menu":
         return 1
     
-    elif uniform_input == "filter":
+    elif uniform_input == "filter": # change to edit planner
         pass
     
-    elif uniform_input == "update task":
+    elif uniform_input == "update task": # remove
         pass
     
-    elif uniform_input == "update class":
+    elif uniform_input == "update class": # remove
         pass
     
-    elif uniform_input == "complete task":
+    elif uniform_input == "complete task": # ???
         pass
     
     elif uniform_input == "exit":
@@ -398,6 +445,16 @@ if __name__ ==  "__main__":
     socket.connect("tcp://localhost:5555") 
     socket.send_string("end")
     socket.recv_string()
+    socket.close()
+    context.term()
+    
+    context = zmq.Context()
+    socket = context.socket(zmq.REQ)
+    socket.connect("tcp://localhost:5556") 
+    socket.send_string("end")
+    socket.recv_string()
+    socket.close()
+    context.term()
     
     custom_print(mode = "line")
     custom_print("Thank you for using prO(1), all progress is saved.", "center")
