@@ -162,12 +162,12 @@ def view_planner():
     
     print()
     print("Select from one of the following options:")
-    print("1. View Class")
-    print("2. View Task")
-    print("3. Edit")
+    print("1. View a Class")
+    print("2. Complete Task")
+    print("3. Start a new term")
     print("press enter to return to main")
     print()
-    user_input = input("|view_planner|: ")
+    user_input = input("|view planner|: ")
     return vp_options(user_input)
 
 def vp_options(user_input):
@@ -175,10 +175,10 @@ def vp_options(user_input):
         return view_class()
     
     elif user_input == "2":
-        return view_task()
+        return complete_task()
     
     elif user_input == "3":
-        return edit_planner()
+        return new_term()
     
     elif user_input == "":
         return 1
@@ -200,7 +200,7 @@ def view_class():
     response = socket.recv_string()
     print(response)
     
-    choose_class = input("|view_class|: ")
+    choose_class = input("|view class|: ")
     # validate input
 
     socket.send_string(choose_class)
@@ -215,11 +215,11 @@ def view_class():
     print("Select from one of the following options:")
     print("1. View Planner")
     print("2. View another Class")
-    print("3. View Task")
-    print("4. Edit")
+    print("3. Complete Task")
+    print("4. Start a new term")
     print("press enter to return to main")
     print()
-    user_input = input("|view_class|: ")
+    user_input = input("|view class|: ")
     return vc_options(user_input)
     
 
@@ -231,10 +231,10 @@ def vc_options(user_input):
         return view_class()
     
     elif user_input == "3":
-        return view_task()
+        return complete_task()
     
     elif user_input == "4":
-        return edit_planner()
+        return new_term()
     
     elif user_input == "":
         return 1
@@ -243,18 +243,122 @@ def vc_options(user_input):
         return shortcut_commands(user_input)
 
 
-def view_task():
-    pass
+def complete_task():
+    custom_print(mode = "line")
+    print_logo()
+    print()
+    
+    context = zmq.Context()
+    socket = context.socket(zmq.REQ)
+    socket.connect("tcp://localhost:5557")
+    socket.send_string("complete_task")
+    
+    response = socket.recv_string()
+    print(response)
+    
+    choose_class = input("|complete task|: ")
+    # validate input
 
-def vt_options():
-    pass
+    socket.send_string(choose_class)
+    
+    response1 = socket.recv_string()
+    print(response1)
+    
+    choose_task = input("|complete task|: ")
+    # validate input
+    
+    print()
+    cancel = input("Are you sure you wish to delete this task? (y/n) ")
+    if cancel == "y" or cancel == "":
+        socket.send_string(choose_task)
+        message = socket.recv_string()
+        print()
+        print(message)
+    
+    socket.close()
+    context.term()
+    
+    print()
+    print("Select from one of the following options:")
+    print("1. View Planner")
+    print("2. View a Class")
+    print("3. Complete another Task")
+    print("4. Start a new term")
+    print("press enter to return to main")
+    print()
+    user_input = input("|complete task|: ")
+    return complete_task_options(user_input)
+
+def complete_task_options(user_input):
+    if user_input == "1":
+        return view_planner()
+    
+    elif user_input == "2":
+        return view_class()
+    
+    elif user_input == "3":
+        return complete_task()
+    
+    elif user_input == "4":
+        return new_term()
+    
+    elif user_input == "":
+        return 1
+    
+    else:
+        return shortcut_commands(user_input)
 
 
-def edit_planner():
-    pass
+def new_term():
+    custom_print(mode = "line")
+    print_logo()
+    print()
+    
+    context = zmq.Context()
+    socket = context.socket(zmq.REQ)
+    socket.connect("tcp://localhost:5558")
+    socket.send_string("new_term")
+    
+    response = socket.recv_string()
+    print(response)
+    
+    choose_rollover = input("|new term|: ")
+        
+    # validate input
 
-def ep_options():
-    pass
+    socket.send_string(choose_rollover)
+    message = socket.recv_string()
+    print()
+    print(message)
+    
+    socket.close()
+    context.term()
+    
+    print()
+    print("Select from one of the following options:")
+    print("1. View Planner")
+    print("2. View a Class")
+    print("3. Complete Task")
+    print("press enter to return to main")
+    print()
+    user_input = input("|new term|: ")
+    return nt_options(user_input)
+
+def nt_options():
+    if user_input == "1":
+        return view_planner()
+    
+    elif user_input == "2":
+        return view_class()
+    
+    elif user_input == "3":
+        return complete_task()
+    
+    elif user_input == "":
+        return 1
+    
+    else:
+        return shortcut_commands(user_input)
 
 
 def create_new():
@@ -397,7 +501,7 @@ def shortcut_commands(user_input):
     elif uniform_input == "view class":
         return view_class()
     
-    elif uniform_input == "view task":
+    elif uniform_input == "view task": # remove
         pass
     
     elif uniform_input == "help":
@@ -415,8 +519,8 @@ def shortcut_commands(user_input):
     elif uniform_input == "update class": # remove
         pass
     
-    elif uniform_input == "complete task": # ???
-        pass
+    elif uniform_input == "complete task":
+        complete_task()
     
     elif uniform_input == "exit":
         return 0
@@ -454,6 +558,22 @@ if __name__ ==  "__main__":
     context = zmq.Context()
     socket = context.socket(zmq.REQ)
     socket.connect("tcp://localhost:5556") 
+    socket.send_string("end")
+    socket.recv_string()
+    socket.close()
+    context.term()
+    
+    context = zmq.Context()
+    socket = context.socket(zmq.REQ)
+    socket.connect("tcp://localhost:5557") 
+    socket.send_string("end")
+    socket.recv_string()
+    socket.close()
+    context.term()
+    
+    context = zmq.Context()
+    socket = context.socket(zmq.REQ)
+    socket.connect("tcp://localhost:5558") 
     socket.send_string("end")
     socket.recv_string()
     socket.close()

@@ -2,6 +2,7 @@ import csv
 import os
 import zmq
 
+# get planner_dict
 def get_planner_as_dict():
     planner_dict = {}
     
@@ -20,15 +21,6 @@ def get_planner_as_dict():
     
     return planner_dict
 
-def choose_class(planner_dict):
-    string = "Choose from one of the following Classes, by name:\n"
-    
-    for class_name in planner_dict:
-        string += f"- {class_name}\n"
-    
-    return string
-    
-
 def get_tasks(planner_dict, class_name):
     total_points, directory, task_list = planner_dict[class_name]
     
@@ -43,32 +35,35 @@ def get_tasks(planner_dict, class_name):
                 task_list.append((task_name, points, due_date, notes, linked_file))
                 
     return (total_points, task_list)
-    
-def choose_task(task_list):
-    string = "Choose from one of the following tasks, by index:\n"
-    
-    for i, task_name in enumerate(task_list):
-        string += f"{i+1}. {task_name[0]}\n"
-    
-    return string
 
-def remove_task(task_index, planner_dict, class_name):
-    total_points, directory, task_list = planner_dict[class_name]
+def all_tasks(planner_dict):
+    task_array = []
+    total_points = 0
     
-    del task_list[task_index]
-    
-    with open(f"{directory}/tasklist.csv", mode = 'w', newline = '') as file:
-        writer = csv.writer(file)
-        writer.writerows([["Task_Name", "Class", "Points", "Due_Date", "Notes", "Linked_File"]])
+    for class_name in planner_dict:
+        total_points, task_list = get_tasks(planner_dict, class_name)
         for task in task_list:
-            writer.writerows([[task[0], class_name, task[1], task[2], task[3], task[4]]])
-    
-    return
+            task_array.append(task)
+            total_points += task[1]
+        
+    return task_array, total_points
+
+# ask user if they want to "rollover" old assignments to the new term under the class "prev term"
+
+# overwrite current planner either empty or with old assignments (class points should sum up to all prev assignments)
+def overwrite_new_term(task_list, total_points):
+    with open(f"./planner.csv", mode = 'a', newline = '') as file:
+        writer = csv.writer(file)
+        writer.writerows([["Previous term", total_points, "./Previous term"]])
+    file.close()
+
+
+# send user a message of completion
 
 def main():
     context = zmq.Context()
     socket = context.socket(zmq.REP)
-    socket.bind("tcp://*:5557")
+    socket.bind("tcp://*:5558")
 
     print("Waiting for requests...")
     
@@ -76,25 +71,22 @@ def main():
         message = socket.recv_string()
         print(f"Received request: {message}")
         
-        if message == "complete_task":
+        if message == "new_term":
             planner_dict = get_planner_as_dict()
             
-            class_string = choose_class(planner_dict)
-            socket.send_string(class_string)
-            class_name = socket.recv_string()
-            # get by index option not working ... ?
+            task_array, total_points = all_tasks(planner_dict)
+            socket.send_string(f"Do you want to roll-over the {len(task_array)} from last term? (y/n)")
+            rollover = socket.recv_string()
             
-            class_points, task_list = get_tasks(planner_dict, class_name)
+            rollover_points = 0
+            rollover_tasks = []
+            if rollover == "y":
+                rollover_points = total_points
+                rollover_tasks = task_array
+                
+            overwrite_new_term(rollover_tasks, rollover_points)
             
-            task_string = choose_task(task_list)
-            socket.send_string(task_string)
-            task_index = int(socket.recv_string()) - 1
-            
-            task_name = task_list[task_index][0]
-            
-            remove_task(task_index, planner_dict, class_name)
-            
-            socket.send_string(f"Completed {task_name}. Good Work! Updated {class_name}.")
+            socket.send_string("New Term started. Good luck!")
         
         elif message == "end":
             socket.send_string("Ending Server")
