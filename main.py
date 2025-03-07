@@ -166,6 +166,7 @@ def view_planner():
     print("2. View Task")
     print("3. Edit")
     print("press enter to return to main")
+    print()
     user_input = input("|view_planner|: ")
     return vp_options(user_input)
 
@@ -204,6 +205,7 @@ def view_class():
 
     socket.send_string(choose_class)
     message = socket.recv_string()
+    print()
     print(message)
     
     socket.close()
@@ -216,6 +218,7 @@ def view_class():
     print("3. View Task")
     print("4. Edit")
     print("press enter to return to main")
+    print()
     user_input = input("|view_class|: ")
     return vc_options(user_input)
     

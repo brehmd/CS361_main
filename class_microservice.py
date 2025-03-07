@@ -56,6 +56,8 @@ def format_class(class_object, class_name):
         string += f"{i+1}. {task_name}"
         if(linked_file):
             string += f" ({linked_file})\n"
+        else:
+            string += "\n"
         string += f"\t- worth {points} point(s)\n"
         string += f"\t- due {due_date[:2]}/{due_date[2:]}\n"
         if(notes):
