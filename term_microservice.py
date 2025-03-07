@@ -41,8 +41,10 @@ def all_tasks(planner_dict):
     total_points = 0
     
     for class_name in planner_dict:
-        total_points, task_list = get_tasks(planner_dict, class_name)
+        print(class_name)
+        task_list = get_tasks(planner_dict, class_name)
         for task in task_list:
+            print(task)
             task_array.append(task)
             total_points += task[1]
         
@@ -52,11 +54,24 @@ def all_tasks(planner_dict):
 
 # overwrite current planner either empty or with old assignments (class points should sum up to all prev assignments)
 def overwrite_new_term(task_list, total_points):
-    with open(f"./planner.csv", mode = 'a', newline = '') as file:
+    
+    if len(task_list) > 0: 
+        os.mkdir(f"./Previous term", 0o755)
+        with open(f"Previous term/tasklist.csv", mode = 'w', newline = '') as file:
+            writer = csv.writer(file)
+            writer.writerows([["Task_Name", "Class", "Points", "Due_Date", "Notes", "Linked_File"]])
+            for task in task_list:
+                writer.writerows([[task[0], "Previous term", task[1], task[2], task[3], task[4]]])
+        file.close()
+    
+    with open(f"./planner.csv", mode = 'w', newline = '') as file:
         writer = csv.writer(file)
-        writer.writerows([["Previous term", total_points, "./Previous term"]])
+        writer.writerows([["Class_Name", "Total_Points", "Directory_Address"]])
+        if len(task_list) > 0: 
+            writer.writerows([["Previous term", total_points, "./Previous term"]])
     file.close()
-
+    
+    return
 
 # send user a message of completion
 

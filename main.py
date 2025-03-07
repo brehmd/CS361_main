@@ -344,7 +344,7 @@ def new_term():
     user_input = input("|new term|: ")
     return nt_options(user_input)
 
-def nt_options():
+def nt_options(user_input):
     if user_input == "1":
         return view_planner()
     
@@ -475,10 +475,10 @@ def create_task():
 
     print()
     print("Press enter to return to main menu")
-    user_input = input("|create class|: ")
+    user_input = input("|create task|: ")
     return cc_options(user_input)
 
-def ct_options():
+def ct_options(user_input):
     if user_input == "":
         return 1
     
