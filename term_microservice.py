@@ -41,12 +41,10 @@ def all_tasks(planner_dict):
     total_points = 0
     
     for class_name in planner_dict:
-        print(class_name)
-        task_list = get_tasks(planner_dict, class_name)
+        _, task_list = get_tasks(planner_dict, class_name)
         for task in task_list:
-            print(task)
             task_array.append(task)
-            total_points += task[1]
+            total_points += int(task[1])
         
     return task_array, total_points
 
@@ -56,7 +54,8 @@ def all_tasks(planner_dict):
 def overwrite_new_term(task_list, total_points):
     
     if len(task_list) > 0: 
-        os.mkdir(f"./Previous term", 0o755)
+        if not os.path.isdir("./Previous term"):
+            os.mkdir(f"./Previous term", 0o755)
         with open(f"Previous term/tasklist.csv", mode = 'w', newline = '') as file:
             writer = csv.writer(file)
             writer.writerows([["Task_Name", "Class", "Points", "Due_Date", "Notes", "Linked_File"]])
@@ -90,7 +89,7 @@ def main():
             planner_dict = get_planner_as_dict()
             
             task_array, total_points = all_tasks(planner_dict)
-            socket.send_string(f"Do you want to roll-over the {len(task_array)} from last term? (y/n)")
+            socket.send_string(f"Do you want to roll-over the {len(task_array)} assignment from last term? (y/n)")
             rollover = socket.recv_string()
             
             rollover_points = 0

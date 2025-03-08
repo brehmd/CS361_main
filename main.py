@@ -57,7 +57,7 @@ def show_homepage():
     print()
     
     custom_print("\"Human Time is more valuable than computing time.\"", "center")
-    custom_print("- Pofessor Liang Huang (2024)", "center")
+    custom_print("- Professor Liang Huang (2024)", "center")
     print()
     
     input("Press Enter to Continue ...")
