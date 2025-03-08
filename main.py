@@ -53,7 +53,7 @@ def print_logo(with_slogan = 0):
 def show_homepage():
     print_logo(1)
     
-    custom_print("Welcome to the ultimate planning program. prO(1) aims to save you time with a planner which integrates with your local file system and gives shortcuts for common tasks.", "center")
+    custom_print("Welcome to the ultimate planning program. prO(1) aims to save you time with a planner which integrates your local file system and gives shortcuts for common tasks.", "center")
     print()
     
     custom_print("\"Human Time is more valuable than computing time.\"", "center")
@@ -108,7 +108,7 @@ def help():
     
     print()
     custom_print("- Viewing the Planner -", "center")
-    custom_print("When viewing the planner you will be given a very high-level view. You will see all of your classes (including those with no tasks) and their tasks, but by name only. To see the details of a class or task: select View Class, View Task, or Filter. View class will give you the option to name the class you wish to get a detailed look at. This will display details about the class as well as detials about each task. View Task just gives information for the one task, however, it also will open any attached files to that task and allow the user to check it off. Lastly, the Filter feature will allow the user to filter the planner by 3 different metrics. Importance to your grade, urency of the due date, or the \"Priority\" which is calculated by both the importance and the urgency of the task. This will help students make informed choices.", "block")
+    custom_print("When viewing the planner you will be given a very high-level view. You will see all of your classes (including those with no tasks) and their tasks, but by name only. To see the details of the classes and/or tasks: select View Class. View class will give you the option to name the class you wish to get a detailed look at. This will display details about the class as well as detials about each task. Complete task is another option given to the user and can be used to remove a task once it is completed. Lastly, the start new term feature will allow the user to completely restart the planner with new classes. It also allows unfinished tasks to either be removed or rolled over.", "block")
     
     print()
     custom_print("- Creating new Classes or Tasks -", "center")
@@ -122,11 +122,8 @@ def help():
     custom_print("* 'create task' - allows a user to create a task to add to a class", "block")
     custom_print("* 'help' - opens up this help menu", "block")
     custom_print("* 'view class' - shows a specific class with more task details", "block")
-    custom_print("* 'view task' - shows a specific task in more detail", "block")
-    custom_print("* 'filter' - allows a user to look at ordered tasks from the planner", "block")
-    custom_print("* 'update class' - gives user a prompt to correct or update class info", "block")
-    custom_print("* 'update task' - gives user a prompt to correct or update task info", "block")
     custom_print("* 'complete task' - allows user to complete and remove task from planner", "block")
+    custom_print("* 'start new term' - resets the planner and gives user an option to carry over remaining tasks", "block")
     custom_print("* 'main menu' - returns to the main menu", "block")
     custom_print("* 'exit' - ends prO(1)", "block")
     
@@ -148,6 +145,7 @@ def h_options(user_input):
 def view_planner():
     custom_print(mode = "line")
     print_logo()
+    custom_print("-- VIEW PLANNER --", "center")
     print()
     
     context = zmq.Context()
@@ -190,6 +188,7 @@ def vp_options(user_input):
 def view_class():
     custom_print(mode = "line")
     print_logo()
+    custom_print("-- VIEW CLASS --", "center")
     print()
     
     context = zmq.Context()
@@ -246,6 +245,7 @@ def vc_options(user_input):
 def complete_task():
     custom_print(mode = "line")
     print_logo()
+    custom_print("-- COMPLETE TASK --", "center")
     print()
     
     context = zmq.Context()
@@ -312,6 +312,7 @@ def complete_task_options(user_input):
 def new_term():
     custom_print(mode = "line")
     print_logo()
+    custom_print("-- START NEW TERM --", "center")
     print()
     
     context = zmq.Context()
@@ -501,23 +502,14 @@ def shortcut_commands(user_input):
     elif uniform_input == "view class":
         return view_class()
     
-    elif uniform_input == "view task": # remove
-        pass
-    
     elif uniform_input == "help":
         return help()
     
     elif uniform_input == "main menu":
         return 1
     
-    elif uniform_input == "filter": # change to edit planner
-        pass
-    
-    elif uniform_input == "update task": # remove
-        pass
-    
-    elif uniform_input == "update class": # remove
-        pass
+    elif uniform_input == "new term":
+        new_term()
     
     elif uniform_input == "complete task":
         complete_task()
